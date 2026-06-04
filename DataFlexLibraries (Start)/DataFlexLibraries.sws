@@ -1,0 +1,11 @@
+{
+    "dependencies": [
+        "DataFlex-dev/Web UI Server#1.0.45",
+        "DataFlex-dev/Web UI Material Theme#1.0.3"
+    ],
+    "description": "Working with DataFlex Libraries Training",
+    "df": 26.0,
+    "projects": [
+        "WebApp.src"
+    ]
+}

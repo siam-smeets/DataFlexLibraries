@@ -1,0 +1,6 @@
+#REPLACE FILE2 UserAttachment
+#REPLACE UserAttachment.Recnum |FN2,0
+#REPLACE UserAttachment.UserAttachmentId |FN2,1
+#REPLACE UserAttachment.UserFeedbackId |FN2,2
+#REPLACE UserAttachment.Filename |FS2,3
+#REPLACE UserAttachment.Size |FN2,4

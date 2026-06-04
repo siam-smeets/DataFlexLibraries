@@ -1,0 +1,6 @@
+#REPLACE FILE1 UserFeedback
+#REPLACE UserFeedback.Recnum |FN1,0
+#REPLACE UserFeedback.UserFeedbackId |FN1,1
+#REPLACE UserFeedback.Subject |FS1,2
+#REPLACE UserFeedback.Description |FS1,3
+#REPLACE UserFeedback.Created |FD1,4

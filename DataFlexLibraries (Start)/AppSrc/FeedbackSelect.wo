@@ -1,0 +1,181 @@
+﻿Use cWebView.pkg
+Use cWebPanel.pkg
+Use cWebButton.pkg
+Use cWebList.pkg
+Use cWebColumn.pkg
+Use cWebMenuGroup.pkg 
+Use cWebMenuItem.pkg
+Use cWebForm.pkg
+Use cWebColumnButton.pkg
+Use cUserFeedbackDataDictionary.dd
+Use cWebHtmlBox.pkg
+
+Object oFeedbackSelect is a cWebView
+    Object oUserFeedback_DD is a cUserFeedbackDataDictionary
+    End_Object
+
+    Set Main_DD to oUserFeedback_DD
+    Set Server to oUserFeedback_DD
+
+    Set peWebViewStyle to wvsDesktop
+    Set peViewType to vtSelect
+    
+    Set psCaption to "FeedbackSelect"
+
+    Set piMaxWidth to 1024
+    Set piColumnCount to 12
+
+    WebSetResponsive piColumnCount rmTabletPortrait to 3
+
+    Procedure OnBeforeShow
+        Send FindFromBottom of oList
+        Send UpdateViewer UserFeedback.Description
+    End_Procedure
+    
+    Procedure UpdateViewer String sDescription
+        String sHtml
+        
+        Move (Replaces((Character(13) + (Character(10))), sDescription, "<br>")) to sHtml
+        Send UpdateHtml of oViewer sHtml
+    End_Procedure
+
+    Object oList is a cWebList
+        Set pbFillHeight to True
+        Set piColumnSpan to 6
+        Set pbServerOnRowClick to True
+        Set psCSSClass to "MobileList"
+        Set piSortColumn to 0 // set this to allow for searching
+        Set pbShowHeader to False
+
+        Object oUserFeedback_Subject is a cWebColumn
+            Entry_Item UserFeedback.Subject
+            Set psCaption to "Subject"
+            Set piWidth to 50
+            Set psCSSClass to "RowCaption"
+        End_Object
+
+        Object oUserFeedback_Description is a cWebColumn
+            Entry_Item UserFeedback.Description
+            Set psCaption to "Description"
+            Set piWidth to 50
+            Set pbNewLine to True
+            Set psCSSClass to "RowDetail"
+            Set peWordBreak to wbEllipsis
+        End_Object
+
+        Procedure OnRowClick String sRowID
+            Send UpdateViewer UserFeedback.Description
+        End_Procedure
+
+        // this makes the zoom view read-only or new or some other customization
+        Procedure OnGetNavigateForwardData tWebNavigateData ByRef NavigateData Handle hoToView
+        End_Procedure
+
+    End_Object    
+
+    Object oViewer is a cWebHtmlBox
+        Set piColumnSpan to 6
+        Set psHtml to ""
+        Set piColumnIndex to 6
+    End_Object
+    
+
+    // add action menu items here
+    
+    Object oActionGroup is a cWebMenuGroup
+        Set psGroupName to "MainActions"
+
+        Object oSearch is a cWebMenuItem
+            Set psCaption to C_$Search
+            Set psCSSClass to "WebPromptMenuItem"
+        
+            Procedure OnClick
+                Send Search of oList
+            End_Procedure            
+        End_Object
+
+        Object oNewButton is a cWebMenuItem
+            Set psCaption to C_$New
+            Set psCSSClass to "WebClearMenuItem"
+            
+// ToDo: Fill in the from-main Zoom view object name for navigate forward
+//            WebRegisterPath ntNavigateForward oZoomView
+
+            Procedure OnClick
+                Send NavigatePath
+            End_Procedure
+
+            Procedure OnGetNavigateForwardData tWebNavigateData ByRef NavigateData Handle hoToView
+                Move True to NavigateData.bNewRecord
+            End_Procedure
+
+        End_Object 
+
+//        // Sample Change sort order button 
+//        Object oSearchOrderNumber is a cWebMenuItem
+//            Set psCaption to "View by ????"
+//            Set peActionDisplay to adMenu  
+//
+//            Procedure OnClick
+//                Integer eType
+//                WebSet piSortColumn of oList to 0 // set a column number
+//                Send GridRefresh of oList
+//            End_Procedure
+//            
+//        End_Object
+
+
+        // Sample top/bottom button
+        Object oFindTop is a cWebMenuItem
+            Set psCaption to C_$Top
+            Set peActionDisplay to adMenu
+            Set pbBeginGroup to True             
+        
+            Procedure OnClick
+                Send MoveToFirstRow of oList
+            End_Procedure
+            
+        End_Object
+
+        Object oFindLast is a cWebMenuItem
+            Set psCaption to C_$Bottom
+            Set peActionDisplay to adMenu             
+        
+            Procedure OnClick
+                Send MoveToLastRow of oList
+            End_Procedure
+            
+        End_Object
+    End_Object
+
+    // Add code to customize your Select View based on how it was invoked.
+    // Use NavigateData to determine the context this view will be used in.
+    Procedure OnNavigateForward tWebNavigateData NavigateData Integer hoInvokingView Integer hoInvokingObject
+
+        // if this view is being used in multiple contexts, you may need a block of code
+        // like this to handle customizations. This would include hiding rows and buttons
+        // (WebSet pbRender) and changing the values of various captions.
+        Case Begin
+            Case (NavigateData.eNavigateType=nfFromParent)
+                // If from parent, this is a constrained drill down.
+                // If needed you could check NavigateData.iTable to determine the constraining parent.
+                Case Break
+                
+            Case (NavigateData.eNavigateType=nfFromChild)
+                // If from child, this is a probably a parent lookup from a Zoom
+                Case Break
+                
+            Case (NavigateData.eNavigateType=nfFromMain)
+                // If from main, this is a propbably a main file lookup from a Zoom.
+                // This is not used often with the drilldown style
+                Case Break
+                
+            Case Else // must be nfUndefined
+                // This may be the start of a drilldown query or some kind ofcustom query.
+                // You may want to check NavigateData.NamedValues.
+                  
+        Case End
+        
+    End_Procedure
+
+End_Object
